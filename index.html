@@ -1,1 +1,79 @@
 <!doctype html><n<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#183f35"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="💰進度"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon.svg"><link rel="stylesheet" href="style.css"><title>💰進度</title></head><body><header><div><small>MY FINANCE</small><h1>💰進度</h1><p>讓每一筆錢，都有自己的方向</p></div><span class="avatar">💰</span></header><main><section class="hero"><p>目前可用餘額</p><h2 id="balance">NT$ 0</h2><div class="stats"><div><small>本月收入</small><b id="income">$0</b></div><div><small>本月支出</small><b id="expense">$0</b></div></div></section><section><div class="section-title"><h3>財務概況</h3><span>目前資料</span></div><div class="tiles"><article><small>信貸剩餘</small><b id="credit">$600,000</b><em>年利率 7%</em></article><article><small>學貸剩餘</small><b id="student">$337,650</b><em>每月 $4,500</em></article><article><small>總負債</small><b id="debt">$937,650</b><em>持續往下降</em></article><article><small>緊急預備金</small><b id="saving">$0</b><em>目標 $93,747</em></article></div></section><section><div class="section-title"><h3>快速記帳</h3><span>資料存在此裝置</span></div><form id="entry"><div class="row"><select id="kind"><option value="expense">支出</option><option value="income">收入</option><option value="pending">待入帳佣金</option></select><input id="amount" type="number" min="1" placeholder="金額（元）" required></div><input id="note" placeholder="備註，例如：餐費、佣金" maxlength="40"><button>新增紀錄</button></form></section><section><div class="section-title"><h3>最近紀錄</h3><button class="link" id="clear">清空紀錄</button></div><ul id="entries" class="entries"><li class="empty">目前還沒有記帳紀錄</li></ul></section><section class="notice"><b>財務小提醒</b><p>先建立緊急預備金，再考慮提前還款。待入帳佣金不會算進可用現金。</p></section></main><nav><a class="active">⌂<small>總覽</small></a><a href="#entry">＋<small>記帳</small></a><a href="#debt">▤<small>債務</small></a><a href="#saving">◎<small>目標</small></a></nav><script src="app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>💰進度 MY FINANCE</title>
+  <style>
+    :root {
+      --bg: #0f1115;
+      --card: #181b22;
+      --card-2: #20242e;
+      --border: #2a2f3c;
+      --text: #f3f4f6;
+      --muted: #9ca3af;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --green: #10b981;
+      --green-bg: rgba(16, 185, 129, 0.14);
+      --red: #ef4444;
+      --red-bg: rgba(239, 68, 68, 0.14);
+      --amber: #f59e0b;
+      --amber-bg: rgba(245, 158, 11, 0.15);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif; }
+    body { background: var(--bg); color: var(--text); padding-bottom: 92px; line-height: 1.5; }
+    .container { max-width: 580px; margin: 0 auto; padding: 16px; }
+
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .brand h1 { font-size: 1.25rem; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+    .brand p { font-size: 0.78rem; color: var(--muted); }
+    .badge-tag { font-size: 0.7rem; background: var(--card-2); border: 1px solid var(--border); padding: 4px 10px; border-radius: 999px; color: var(--muted); }
+
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; }
+    .card-title { font-size: 0.9rem; font-weight: 600; color: var(--muted); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+
+    .hero { background: linear-gradient(135deg, #1b2234 0%, #141821 100%); border: 1px solid #2b354d; }
+    .hero-label { font-size: 0.85rem; color: var(--muted); }
+    .hero-amount { font-size: 2.1rem; font-weight: 800; letter-spacing: -0.5px; margin: 4px 0 14px; }
+    .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.08); }
+    .stat-box span { font-size: 0.75rem; color: var(--muted); display: block; }
+    .stat-box strong { font-size: 1.05rem; font-weight: 700; }
+    .text-green { color: var(--green); }
+    .text-red { color: var(--red); }
+    .text-amber { color: var(--amber); }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .mini-card { background: var(--card-2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+    .mini-card .label { font-size: 0.75rem; color: var(--muted); }
+    .mini-card .val { font-size: 1.1rem; font-weight: 700; margin: 2px 0; }
+    .mini-card .sub { font-size: 0.72rem; color: var(--muted); }
+
+    .progress-wrap { background: #111318; height: 8px; border-radius: 999px; overflow: hidden; margin-top: 8px; }
+    .progress-bar { height: 100%; background: var(--green); border-radius: 999px; transition: width 0.3s ease; }
+    .progress-bar.blue { background: var(--primary); }
+
+    .tip-box { background: var(--amber-bg); border: 1px solid rgba(245, 158, 11, 0.35); color: #fcd34d; padding: 12px 14px; border-radius: 12px; font-size: 0.82rem; margin-bottom: 14px; }
+    .tip-box.ok { background: var(--green-bg); border-color: rgba(16, 185, 129, 0.35); color: #6ee7b7; }
+
+    .seg-control { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--card-2); padding: 4px; border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--border); }
+    .seg-control.col-2 { grid-template-columns: repeat(2, 1fr); }
+    .seg-btn { background: transparent; border: none; color: var(--muted); padding: 8px 4px; font-size: 0.85rem; font-weight: 600; border-radius: 9px; cursor: pointer; transition: 0.2s; }
+    .seg-btn.active { background: var(--primary); color: #fff; }
+    .seg-btn.active.expense { background: var(--red); }
+    .seg-btn.active.income { background: var(--green); color: #06281e; }
+    .seg-btn.active.commission { background: var(--amber); color: #271700; }
+
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 0.78rem; color: var(--muted); margin-bottom: 5px; }
+    input, select { width: 100%; background: var(--card-2); border: 1px solid var(--border); color: var(--text); padding: 11px 12px; border-radius: 10px; font-size: 0.95rem; outline: none; }
+    input:focus, select:focus { border-color: var(--primary); }
+
+    .btn { width: 100%; background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 12px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: 0.2s; }
+    .btn:hover { background: var(--primary-hover); }
+    .btn-sm { width: auto; padding: 5px 10px; font-size: 0.75rem; border-radius: 8px; }
+    .btn-green { background: var(--green); color: #052e22; }
+    .btn-outline { background: transparent; border: 1px solid var(--
